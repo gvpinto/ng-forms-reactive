@@ -14,10 +14,15 @@ export class AppComponent implements OnInit {
     return (this.signupForm.get('hobbies') as FormArray).controls;
   }
 
+  forbiddenUsernames = ['Chris', 'Anna'];
+
   ngOnInit(): void {
     this.signupForm = new FormGroup({
       userData: new FormGroup({
-        username: new FormControl(null, Validators.required), // refuses to save as 'username'
+        username: new FormControl(null, [
+          Validators.required,
+          this.forbiddenNames.bind(this),
+        ]), // refuses to save as 'username'
         email: new FormControl(null, [Validators.required, Validators.email]),
       }),
       gender: new FormControl('male'),
@@ -32,6 +37,13 @@ export class AppComponent implements OnInit {
   onAddHobby(): void {
     const control = new FormControl(null, Validators.required);
     (<FormArray>this.signupForm.get('hobbies')).push(control);
+  }
+
+  forbiddenNames(control: FormControl): { [s: string]: boolean } {
+    if (this.forbiddenUsernames.indexOf(control.value) !== -1) {
+      return { nameIsForbidden: true };
+    }
+    return null;
   }
 
   //   getControls() {
